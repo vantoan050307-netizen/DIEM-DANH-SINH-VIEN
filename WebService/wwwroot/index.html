@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quan Ly Diem Danh</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #eef2f5; padding: 30px; }
+        .container { max-width: 800px; background: white; padding: 25px; border-radius: 8px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #0056b3; }
+        .form-group { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .form-group input { padding: 8px 12px; flex: 1; min-width: 150px; border: 1px solid #ccc; border-radius: 4px; }
+        .form-group button { padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .form-group button:hover { background: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background: #0056b3; color: white; }
+        
+        /* Màu sắc trạng thái */
+        .badge-co-mat { background: #28a745; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; }
+        .badge-co-phep { background: #ffc107; color: #333; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
+        .badge-khong-phep { background: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; }
+        
+        .action-btns { display: flex; gap: 5px; justify-content: center; }
+        .btn-CM { background: #28a745; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
+        .btn-CP { background: #e0a800; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
+        .btn-KP { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>QUAN LY DIEM DANH SINH VIEN</h2>
+
+    <div class="form-group">
+        <input type="text" id="txtMaSV" placeholder="Nhap ma SV...">
+        <input type="text" id="txtHoTen" placeholder="Nhap ho ten...">
+        <input type="text" id="txtLop" placeholder="Nhap lop...">
+        <button type="button" onclick="themSinhVien()">Them sinh vien</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ma SV</th>
+                <th>Ho va Ten</th>
+                <th>Lop</th>
+                <th>Trang thai</th>
+                <th>Thao tac diem danh</th>
+            </tr>
+        </thead>
+        <tbody id="tblSinhVien">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Trang thai: 'ChuaDiemDanh', 'CoMat', 'CoPhep', 'KhongPhep'
+    let danhSach = [
+        { maSV: "SV01", hoTen: "Nguyen Van A", lop: "CNTT K15", trangThai: "ChuaDiemDanh" },
+        { maSV: "SV02", hoTen: "Tran Thi B", lop: "CNTT K15", trangThai: "ChuaDiemDanh" }
+    ];
+
+    function hienThi() {
+        let html = '';
+        for (let i = 0; i < danhSach.length; i++) {
+            let sv = danhSach[i];
+            let badgeHTML = '';
+
+            if (sv.trangThai === "CoMat") {
+                badgeHTML = '<span class="badge-co-mat">Co mat</span>';
+            } else if (sv.trangThai === "CoPhep") {
+                badgeHTML = '<span class="badge-co-phep">Vang co phep</span>';
+            } else if (sv.trangThai === "KhongPhep") {
+                badgeHTML = '<span class="badge-khong-phep">Vang khong phep</span>';
+            } else {
+                badgeHTML = '<span style="color: gray;">Chua diem danh</span>';
+            }
+                
+            html += '<tr>' +
+                '<td>' + sv.maSV + '</td>' +
+                '<td>' + sv.hoTen + '</td>' +
+                '<td>' + sv.lop + '</td>' +
+                '<td>' + badgeHTML + '</td>' +
+                '<td>' +
+                    '<div class="action-btns">' +
+                        '<button class="btn-CM" onclick="capNhatTrangThai(' + i + ', \'CoMat\')">Co</button>' +
+                        '<button class="btn-CP" onclick="capNhatTrangThai(' + i + ', \'CoPhep\')">Co phep</button>' +
+                        '<button class="btn-KP" onclick="capNhatTrangThai(' + i + ', \'KhongPhep\')">Khong phep</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }
+        let tbody = document.getElementById('tblSinhVien');
+        if (tbody) {
+            tbody.innerHTML = html;
+        }
+    }
+
+    function themSinhVien() {
+        let maSVInput = document.getElementById('txtMaSV');
+        let hoTenInput = document.getElementById('txtHoTen');
+        let lopInput = document.getElementById('txtLop');
+
+        let maSV = maSVInput.value.trim();
+        let hoTen = hoTenInput.value.trim();
+        let lop = lopInput.value.trim();
+
+        if (maSV === "" || hoTen === "" || lop === "") {
+            alert("Vui long nhap du thong tin!");
+            return;
+        }
+
+        danhSach.push({ maSV: maSV, hoTen: hoTen, lop: lop, trangThai: "ChuaDiemDanh" });
+
+        maSVInput.value = '';
+        hoTenInput.value = '';
+        lopInput.value = '';
+
+        hienThi();
+    }
+
+    function capNhatTrangThai(index, status) {
+        danhSach[index].trangThai = status;
+        hienThi();
+    }
+
+    window.onload = function() {
+        hienThi();
+    };
+</script>
+
+</body>
+</html>

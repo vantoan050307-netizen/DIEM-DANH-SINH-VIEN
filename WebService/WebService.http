@@ -1,0 +1,36 @@
+@host = http://localhost:5046
+
+### Tổng quan
+GET {{host}}/api/dashboard
+
+### Danh sách lớp
+GET {{host}}/api/classes
+
+### Học viên của lớp 1
+GET {{host}}/api/classes/1/students
+
+### Thêm học viên
+POST {{host}}/api/students
+Content-Type: application/json
+
+{ "fullName": "Trần Văn An", "email": "tranvanan@educore.test", "classId": 1 }
+
+### Điểm danh cả lớp (status: 0 vắng, 1 có mặt, 2 trễ, 3 có phép)
+POST {{host}}/api/attendance
+Content-Type: application/json
+
+{
+  "classId": 1,
+  "date": "2026-11-07",
+  "records": [
+    { "studentId": 1, "status": 1 },
+    { "studentId": 2, "status": 2 },
+    { "studentId": 3, "status": 0 }
+  ]
+}
+
+### Xem điểm danh lớp theo ngày
+GET {{host}}/api/attendance?classId=1&date=2026-11-07
+
+### Thống kê chuyên cần của 1 học viên
+GET {{host}}/api/attendance/students/1/stats

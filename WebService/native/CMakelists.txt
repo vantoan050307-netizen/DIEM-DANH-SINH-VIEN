@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.15)
+project(attendance_native CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_library(attendance_native SHARED attendance_stats.cpp)
+
+# Xuất thư viện ra ../bin-native để file .csproj tự copy vào thư mục chạy
+set(OUT ${CMAKE_CURRENT_SOURCE_DIR}/../bin-native)
+set_target_properties(attendance_native PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${OUT}
+    RUNTIME_OUTPUT_DIRECTORY ${OUT}
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${OUT}
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${OUT}
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${OUT}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${OUT})
