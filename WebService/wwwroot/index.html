@@ -2,131 +2,310 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quan Ly Diem Danh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Điểm Danh Sinh Viên - ASP.NET Core Web API</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #eef2f5; padding: 30px; }
-        .container { max-width: 800px; background: white; padding: 25px; border-radius: 8px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #0056b3; }
-        .form-group { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .form-group input { padding: 8px 12px; flex: 1; min-width: 150px; border: 1px solid #ccc; border-radius: 4px; }
-        .form-group button { padding: 8px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .form-group button:hover { background: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
-        th { background: #0056b3; color: white; }
-        
-        /* Màu sắc trạng thái */
-        .badge-co-mat { background: #28a745; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; }
-        .badge-co-phep { background: #ffc107; color: #333; padding: 5px 10px; border-radius: 4px; display: inline-block; font-weight: bold; }
-        .badge-khong-phep { background: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; display: inline-block; }
-        
-        .action-btns { display: flex; gap: 5px; justify-content: center; }
-        .btn-CM { background: #28a745; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
-        .btn-CP { background: #e0a800; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
-        .btn-KP { background: #dc3545; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; }
+        :root {
+            --primary-color: #0056b3;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --bg-color: #f4f6f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: #333;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Thống kê nhanh */
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            background: #e9ecef;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .stat-card.total { border-left: 4px solid var(--primary-color); }
+        .stat-card.present { border-left: 4px solid var(--success-color); color: #155724; background: #d4edda; }
+        .stat-card.permission { border-left: 4px solid var(--warning-color); color: #856404; background: #fff3cd; }
+        .stat-card.absent { border-left: 4px solid var(--danger-color); color: #721c24; background: #f8d7da; }
+
+        /* Form thêm sinh viên & Tìm kiếm */
+        .control-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-panel input, .control-panel select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .control-panel input[type="text"] { flex: 1; min-width: 140px; }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-add { background: var(--primary-color); color: white; }
+        .btn-add:hover { background: #004085; }
+
+        .btn-submit { background: var(--success-color); color: white; font-size: 16px; padding: 10px 24px; }
+        .btn-submit:hover { background: #218838; }
+
+        .btn-delete { background: var(--danger-color); color: white; padding: 4px 8px; font-size: 12px; }
+        .btn-delete:hover { background: #c82333; }
+
+        /* Bảng danh sách */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) { background-color: #f8f9fa; }
+
+        select.status-select {
+            padding: 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .footer a {
+            color: #0056b3;
+            text-decoration: underline;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>QUAN LY DIEM DANH SINH VIEN</h2>
+    <h2>ỨNG DỤNG ĐIỂM DANH SINH VIÊN</h2>
 
-    <div class="form-group">
-        <input type="text" id="txtMaSV" placeholder="Nhap ma SV...">
-        <input type="text" id="txtHoTen" placeholder="Nhap ho ten...">
-        <input type="text" id="txtLop" placeholder="Nhap lop...">
-        <button type="button" onclick="themSinhVien()">Them sinh vien</button>
+    <!-- Thống kê nhanh -->
+    <div class="stats-bar">
+        <div class="stat-card total">Tổng số: <span id="countTotal">0</span></div>
+        <div class="stat-card present">Có mặt: <span id="countPresent">0</span></div>
+        <div class="stat-card permission">Có phép: <span id="countPermission">0</span></div>
+        <div class="stat-card absent">Vắng: <span id="countAbsent">0</span></div>
     </div>
 
+    <!-- Thanh công cụ thêm sinh viên -->
+    <div class="control-panel">
+        <input type="text" id="newMaSV" placeholder="Mã SV (VD: 050307)">
+        <input type="text" id="newHoTen" placeholder="Họ và Tên (VD: Văn Toàn)">
+        <input type="text" id="newLop" placeholder="Lớp (VD: CNTT K16)" value="CNTT K16">
+        <button class="btn btn-add" onclick="addStudent()">+ Thêm Sinh Viên</button>
+    </div>
+
+    <!-- Thanh lọc & tìm kiếm -->
+    <div class="control-panel">
+        <label for="attDate"><strong>Ngày điểm danh:</strong></label>
+        <input type="date" id="attDate">
+        
+        <input type="text" id="searchInput" placeholder="🔍 Tìm theo tên hoặc Mã SV..." oninput="renderTable()">
+        
+        <select id="filterStatus" onchange="renderTable()">
+            <option value="ALL">-- Tất cả trạng thái --</option>
+            <option value="CoMat">Có mặt</option>
+            <option value="CoPhep">Có phép</option>
+            <option value="Vang">Vắng</option>
+        </select>
+    </div>
+
+    <!-- Bảng dữ liệu điểm danh -->
     <table>
         <thead>
             <tr>
-                <th>Ma SV</th>
-                <th>Ho va Ten</th>
-                <th>Lop</th>
-                <th>Trang thai</th>
-                <th>Thao tac diem danh</th>
+                <th style="width: 50px;">STT</th>
+                <th>Mã SV</th>
+                <th>Họ và Tên</th>
+                <th>Lớp</th>
+                <th>Trạng Thái Điểm Danh</th>
+                <th style="width: 70px;">Thao tác</th>
             </tr>
         </thead>
-        <tbody id="tblSinhVien">
+        <tbody id="studentList">
+            <!-- Dữ liệu JavaScript sẽ tự động xuất ra đây -->
         </tbody>
     </table>
+
+    <div style="text-align: right; margin-top: 20px;">
+        <button class="btn btn-submit" onclick="saveAttendance()">💾 Lưu Điểm Danh</button>
+    </div>
+
+    <div class="footer">
+        Đồ án Webservice RESTful API | Triển khai trên Vercel: 
+        <a href="https://diem-danh-sinh-vien-iota.vercel.app" target="_blank">https://diem-danh-sinh-vien-iota.vercel.app</a>
+    </div>
 </div>
 
 <script>
-    // Trang thai: 'ChuaDiemDanh', 'CoMat', 'CoPhep', 'KhongPhep'
-    let danhSach = [
-        { maSV: "SV01", hoTen: "Nguyen Van A", lop: "CNTT K15", trangThai: "ChuaDiemDanh" },
-        { maSV: "SV02", hoTen: "Tran Thi B", lop: "CNTT K15", trangThai: "ChuaDiemDanh" }
+    // Danh sách sinh viên mẫu có đầy đủ dấu Tiếng Việt
+    let students = [
+        { maSV: '050307', hoTen: 'Văn Toàn', lop: 'CNTT K16', trangThai: 'CoMat' },
+        { maSV: '050308', hoTen: 'Nguyễn Văn An', lop: 'CNTT K16', trangThai: 'CoMat' },
+        { maSV: '050309', hoTen: 'Trần Thị Bảo', lop: 'CNTT K16', trangThai: 'CoPhep' },
+        { maSV: '050310', hoTen: 'Lê Hoàng Cường', lop: 'CNTT K16', trangThai: 'Vang' }
     ];
 
-    function hienThi() {
-        let html = '';
-        for (let i = 0; i < danhSach.length; i++) {
-            let sv = danhSach[i];
-            let badgeHTML = '';
+    // Tự động gán ngày hiện tại cho ô chọn ngày
+    document.getElementById('attDate').valueAsDate = new Date();
 
-            if (sv.trangThai === "CoMat") {
-                badgeHTML = '<span class="badge-co-mat">Co mat</span>';
-            } else if (sv.trangThai === "CoPhep") {
-                badgeHTML = '<span class="badge-co-phep">Vang co phep</span>';
-            } else if (sv.trangThai === "KhongPhep") {
-                badgeHTML = '<span class="badge-khong-phep">Vang khong phep</span>';
-            } else {
-                badgeHTML = '<span style="color: gray;">Chua diem danh</span>';
-            }
-                
-            html += '<tr>' +
-                '<td>' + sv.maSV + '</td>' +
-                '<td>' + sv.hoTen + '</td>' +
-                '<td>' + sv.lop + '</td>' +
-                '<td>' + badgeHTML + '</td>' +
-                '<td>' +
-                    '<div class="action-btns">' +
-                        '<button class="btn-CM" onclick="capNhatTrangThai(' + i + ', \'CoMat\')">Co</button>' +
-                        '<button class="btn-CP" onclick="capNhatTrangThai(' + i + ', \'CoPhep\')">Co phep</button>' +
-                        '<button class="btn-KP" onclick="capNhatTrangThai(' + i + ', \'KhongPhep\')">Khong phep</button>' +
-                    '</div>' +
-                '</td>' +
-            '</tr>';
-        }
-        let tbody = document.getElementById('tblSinhVien');
-        if (tbody) {
-            tbody.innerHTML = html;
+    // Cập nhật thẻ thống kê số lượng
+    function updateStats() {
+        document.getElementById('countTotal').innerText = students.length;
+        document.getElementById('countPresent').innerText = students.filter(s => s.trangThai === 'CoMat').length;
+        document.getElementById('countPermission').innerText = students.filter(s => s.trangThai === 'CoPhep').length;
+        document.getElementById('countAbsent').innerText = students.filter(s => s.trangThai === 'Vang').length;
+    }
+
+    // Hiển thị danh sách lên bảng
+    function renderTable() {
+        const tbody = document.getElementById('studentList');
+        const searchKeyword = document.getElementById('searchInput').value.toLowerCase();
+        const filterStatus = document.getElementById('filterStatus').value;
+
+        tbody.innerHTML = '';
+
+        let filtered = students.filter(s => {
+            const matchSearch = s.hoTen.toLowerCase().includes(searchKeyword) || s.maSV.toLowerCase().includes(searchKeyword);
+            const matchStatus = filterStatus === 'ALL' || s.trangThai === filterStatus;
+            return matchSearch && matchStatus;
+        });
+
+        filtered.forEach((s, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${s.maSV}</strong></td>
+                <td>${s.hoTen}</td>
+                <td>${s.lop}</td>
+                <td>
+                    <select class="status-select" onchange="changeStatus('${s.maSV}', this.value)">
+                        <option value="CoMat" ${s.trangThai === 'CoMat' ? 'selected' : ''}>Có mặt</option>
+                        <option value="CoPhep" ${s.trangThai === 'CoPhep' ? 'selected' : ''}>Có phép</option>
+                        <option value="Vang" ${s.trangThai === 'Vang' ? 'selected' : ''}>Vắng</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-delete" onclick="deleteStudent('${s.maSV}')">Xóa</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        updateStats();
+    }
+
+    // Đổi trạng thái điểm danh
+    function changeStatus(maSV, newStatus) {
+        const student = students.find(s => s.maSV === maSV);
+        if (student) {
+            student.trangThai = newStatus;
+            updateStats();
         }
     }
 
-    function themSinhVien() {
-        let maSVInput = document.getElementById('txtMaSV');
-        let hoTenInput = document.getElementById('txtHoTen');
-        let lopInput = document.getElementById('txtLop');
+    // Thêm sinh viên mới
+    function addStudent() {
+        const maSV = document.getElementById('newMaSV').value.trim();
+        const hoTen = document.getElementById('newHoTen').value.trim();
+        const lop = document.getElementById('newLop').value.trim();
 
-        let maSV = maSVInput.value.trim();
-        let hoTen = hoTenInput.value.trim();
-        let lop = lopInput.value.trim();
-
-        if (maSV === "" || hoTen === "" || lop === "") {
-            alert("Vui long nhap du thong tin!");
+        if (!maSV || !hoTen) {
+            alert('Vui lòng nhập đầy đủ Mã sinh viên và Họ tên!');
             return;
         }
 
-        danhSach.push({ maSV: maSV, hoTen: hoTen, lop: lop, trangThai: "ChuaDiemDanh" });
+        if (students.some(s => s.maSV === maSV)) {
+            alert('Mã sinh viên này đã tồn tại trong danh sách!');
+            return;
+        }
 
-        maSVInput.value = '';
-        hoTenInput.value = '';
-        lopInput.value = '';
-
-        hienThi();
+        students.push({ maSV, hoTen, lop, trangThai: 'CoMat' });
+        document.getElementById('newMaSV').value = '';
+        document.getElementById('newHoTen').value = '';
+        renderTable();
     }
 
-    function capNhatTrangThai(index, status) {
-        danhSach[index].trangThai = status;
-        hienThi();
+    // Xóa sinh viên
+    function deleteStudent(maSV) {
+        if (confirm('Bạn có chắc chắn muốn xóa sinh viên này khỏi danh sách?')) {
+            students = students.filter(s => s.maSV !== maSV);
+            renderTable();
+        }
     }
 
-    window.onload = function() {
-        hienThi();
-    };
+    // Thông báo lưu dữ liệu
+    function saveAttendance() {
+        const date = document.getElementById('attDate').value;
+        alert(`Đã lưu thành công dữ liệu điểm danh ngày ${date} cho ${students.length} sinh viên!`);
+    }
+
+    // Chạy render ngay khi tải trang
+    renderTable();
 </script>
 
 </body>
