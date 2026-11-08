@@ -1,8 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/WebService/wwwroot/$1"
-    }
-  ]
-}

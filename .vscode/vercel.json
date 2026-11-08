@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/WebService/wwwroot/$1" }
+  ]
+}
